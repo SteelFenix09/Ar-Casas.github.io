@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Visualizacion AR de casas - Innova Archviz">
+    <title>Innova Arcviz</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Innova Archviz</h1>
+        <p>Visualización de casas en Realidad Aumentada</p>
+    </header>
+    <main>
+        <model-viewer
+        src="./assets/modelos/Astronaut.glb"
+        ar
+        ar-modes="webxr scene-viewer quick-lool"
+        camara-controls
+        ar-scale="auto"
+        environment-image="neutral"
+        shadow-intensity="1"
+        alt="Modelo 3d de una casa"
+        style="width: 100%; height: 500px;"
+        >
+        <button slot="ar-button" class="ar-button">
+            👁️ Ver en AR
+        </button>
+        <div class="progress-bar" slot="progress-bar">
+            <div class="update-bar"></div>
+        </div>
+    </model-viewer>
+    </main>
+
+</body>
+</html>
