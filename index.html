@@ -1,51 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Visualizacion AR de casas - Innova Archviz">
-    <title>Innova Arcviz</title>
+    <title>Innova Arcviz - AR Terreno</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <link rel="stylesheet" href="./css/style.css">
 </head>
+
 <body>
-    <header>
-        <h1>Innova Archviz</h1>
-        <p>Visualización de casas en Realidad Aumentada</p>
-    </header>
-    <main>
-        <model-viewer
-        src="./assets/modelos/Astronaut.glb"
-        ar
-        ar-modes="webxr scene-viewer quick-lool"
-        camara-controls
-        ar-scale="auto"
-        environment-image="neutral"
-        shadow-intensity="1"
-        alt="Modelo 3d de una casa"
-        style="width: 100%; height: 500px;"
-        >
-        <button slot="ar-button" class="ar-button">
-            👁️ Ver en AR
-        </button>
-        <div class="progress-bar" slot="progress-bar">
-            <div class="update-bar"></div>
-        </div>
-    </model-viewer>
-    <section class="instructions">
-            <h2>¿Cómo usar?</h2>
-            <ol>
-                <li>Apunta la cámara a una superficie plana (mesa, piso)</li>
-                <li>Presiona el botón "👁️ Ver en AR"</li>
-                <li>Mueve el teléfono hasta que aparezca el modelo</li>
-                <li>¡Camina alrededor para verlo desde todos los ángulos!</li>
-            </ol>
-        </section>
-    </main>
-     <footer>
-        <p>Escanea este código QR para compartir:</p>
-        <div id="qr-code"></div>
-        <p class="note">Necesitas HTTPS para que la cámara funcione</p>
-    </footer>
+    <div id="start-screen">
+        <h1>🏠 Innova Archviz</h1>
+        <p>Visualiza tu futura casa en tamaño real sobre cualquier terreno</p>
+        <p>
+            <strong>Instrucciones:
+            </strong>
+            Busca una superficie plana (piso, mesa, terreno) y mueve lentamente
+            tu cámara hasta que aparezcan puntos grises
+        </p>
+    </div>
+    <div class="ar-container" style="display: none;">
+        <model-viewer 
+        id="house-modal" 
+        src="./assets/modelos/Astronaut.glb" 
+        ar 
+        ar-modes="webxr scene-viewer quick-lool" 
+        camera-controls ar-scale="auto" 
+        ar-placement="floor" 
+        environment-image="neutral" 
+        shadow-intensity="1.5"
+        exposure="1" 
+        alt="Modelo 3d de una casa" 
+        style="width: 100%; height: 100%;">
+            <div class="controls">
+                <button class="control-btn" id="reset-btn">Reubica</button>
+                <button class="control-btn" id="info-btn">Infor</button>
+            </div>
+            <div>
+                <p>📱 <strong>Mueve el teléfono lentamente</strong> para escanear el terreno</p>
+                <p>Cuando veas puntos grises, <strong>toca la pantalla</strong> para colocar la casa</p>
+            </div>
+        </model-viewer>
+    </div>
+    <script src="./js/main.js"></script> 
 </body>
+
 </html>
