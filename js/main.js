@@ -102,21 +102,21 @@ modelViewerAr.addEventListener('ar-status',(event)=>{
     }
     if(event.detail.status ==='failed'){
         console.error('Fallo la sesion',event.detail.statusMessage);
-        alert('No se pudo inicar la cmara AR')
+        alert('No se pudo iniciar la cámara AR')
     }
 })
 
 // Ocultar instrucciones al tocar para colocar modelo
-modelViewerAR.addEventListener('click', () => {
+modelViewerAr.addEventListener('click', () => {
     console.log('Usuario tocó la pantalla para colocar modelo');
-    if (arInstructions && !arInstructions.classList.contains('hidden')) {
-        arInstructions.classList.add('hidden');
+    if (instructions && !instructions.classList.contains('hidden')) {
+        instructions.classList.add('hidden');
     }
 });
 
 // Prevenir scroll en modelo AR
 document.addEventListener('touchmove', (e) => {
-    if (e.target === modelViewerAR || modelViewerAR.contains(e.target)) {
+    if (e.target === modelViewerAr || modelViewerAr.contains(e.target)) {
         e.preventDefault();
     }
 }, { passive: false });
