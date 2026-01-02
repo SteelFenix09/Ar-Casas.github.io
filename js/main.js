@@ -29,28 +29,6 @@ activateArBtn.addEventListener('click',()=>{
     console.log('Modo AR');
     modelScreen.style.display = 'none'
     arContainer.style.display = 'block'
-
-    // entra en modo ar despues de un retraso
-
-    setTimeout(()=>{
-        console.log('Boton ar..');
-        if(modelViewerAr.shadowRoot){
-            const arButton = modelViewerAr.shadowRoot.querySelector('button[slot="ar-button"]');
-            if(arButton){
-                console.log('Boton ar encontrado, haciendo click');
-                arButton.click()
-                //oculta instruciones despues de activar ar
-                setTimeout(()=>{
-                    if(instructions){
-                        instructions.classList.add('hidden');
-                    }
-                },5000)
-            } else{
-                console.warn('Boton ar no encontrado');
-                
-            }
-        }
-    },500)
 })
 
 //salir de Ar
@@ -76,15 +54,6 @@ resetBtn.addEventListener('click',()=>{
         if(instructions){
             instructions.classList.remove('hidden');
         }
-
-        setTimeout(()=>{
-            if(modelViewerAr.shadowRoot){
-                const arButton = modelViewerAr.shadowRoot.querySelector('button[slot="ar-button"]');
-                if(arButton){
-                    arButton.click()
-                }
-            }
-        },500)
     },100)
 })
 
