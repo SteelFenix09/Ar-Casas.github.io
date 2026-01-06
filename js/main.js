@@ -25,10 +25,24 @@ backBtn.addEventListener('click',()=>{
 })
 
 //activar ar camara
-activateArBtn.addEventListener('click',()=>{
+activateArBtn.addEventListener('click', ()=>{
     console.log('Modo AR');
-    modelScreen.style.display = 'none'
-    arContainer.style.display = 'block'
+    modelScreen.style.display = 'none';
+    arContainer.style.display = 'block';
+
+    // Intentar activar la cámara simulando click en el botón AR interno del <model-viewer>
+    setTimeout(() => {
+        try {
+            const innerArBtn = modelViewerAr.querySelector('button[slot="ar-button"]');
+            if (innerArBtn) {
+                innerArBtn.click();
+            } else {
+                console.warn('Botón AR interno no encontrado');
+            }
+        } catch (err) {
+            console.error('Error al intentar activar AR:', err);
+        }
+    }, 200);
 })
 
 //salir de Ar
