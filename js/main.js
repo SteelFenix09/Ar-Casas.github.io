@@ -36,7 +36,11 @@ backBtn.addEventListener('click', () => {
 activateArBtn.addEventListener('click', () => {
     console.log('Modo AR');
     modelScreen.style.display = 'none';
-    arContainer.style.display = 'block';
+    if (arContainer) {
+        arContainer.style.display = 'block';
+    } else {
+        console.warn('No se encontró #ar-container en el DOM');
+    }
 
     // Ocultar controles en pantalla estática cuando se activa AR
     if (modelControls) {
@@ -46,11 +50,16 @@ activateArBtn.addEventListener('click', () => {
     // Intentar activar la cámara simulando click en el botón AR interno del <model-viewer>
     setTimeout(() => {
         try {
-            const innerArBtn = modelViewerAr.querySelector('button[slot="ar-button"]');
-            if (innerArBtn) {
-                innerArBtn.click();
+            if (modelViewerAr) {
+                // Intentar activar el botón AR interno (si está disponible)
+                const innerArBtn = modelViewerAr.querySelector('button[slot="ar-button"]');
+                if (innerArBtn) {
+                    innerArBtn.click();
+                } else {
+                    console.warn('Botón AR interno no encontrado en #house-modal-ar — el usuario puede tocar el botón AR manualmente.');
+                }
             } else {
-                console.warn('Botón AR interno no encontrado');
+                console.warn('Elemento #house-modal-ar no encontrado');
             }
         } catch (err) {
             console.error('Error al intentar activar AR:', err);
@@ -61,10 +70,10 @@ activateArBtn.addEventListener('click', () => {
 //salir de Ar
 exitArBtn.addEventListener('click', () => {
     console.log('saliendo de AR..')
-    arContainer.style.display = 'none'
+    if (arContainer) arContainer.style.display = 'none';
     modelScreen.style.display = 'flex'
 
-    modelViewerAr.ar = false;
+    // No forzamos propiedades internas del componente; simplemente restauramos la UI.
     // Restaurar controles e instrucciones al salir
 
     if (modelControls) {
@@ -79,7 +88,7 @@ exitArBtn.addEventListener('click', () => {
 
 // Prevenir scroll en modelo AR
 document.addEventListener('touchmove', (e) => {
-    if (e.target === modelViewerAr || modelViewerAr.contains(e.target)) {
+    if (modelViewerAr && (e.target === modelViewerAr || modelViewerAr.contains(e.target))) {
         e.preventDefault();
     }
 }, { passive: false });
