@@ -10,12 +10,20 @@ const instructions = document.getElementById('ar-instructions');
 const resetBtn = document.getElementById('reset-btn-ar');
 const modelViewer = document.getElementById('house-modal');
 const modelViewerAr = document.getElementById('house-modal-ar');
+const modelControls = document.querySelector('.model-controls');
+const arControls = document.querySelector('#ar-container .ar-controls');
 
 //ver modelo estatico
 startButton.addEventListener('click',()=>{
     console.log('Mostrando modelo 3d...');
     startScreen.style.display = 'none'
     modelScreen.style.display = 'block'
+    // Asegurar que el model-viewer sea visible (casos donde el CSS pueda ocultarlo)
+    if (modelViewer) {
+        modelViewer.style.display = '';
+        modelViewer.style.visibility = 'visible';
+        modelViewer.style.opacity = '1';
+    }
 })
 
 //volver al inicio
@@ -29,6 +37,11 @@ activateArBtn.addEventListener('click', ()=>{
     console.log('Modo AR');
     modelScreen.style.display = 'none';
     arContainer.style.display = 'block';
+
+    // Ocultar controles en pantalla estática cuando se activa AR
+    if (modelControls) {
+        modelControls.style.display = 'none';
+    }
 
     // Intentar activar la cámara simulando click en el botón AR interno del <model-viewer>
     setTimeout(() => {
@@ -52,8 +65,15 @@ exitArBtn.addEventListener('click',()=>{
     modelScreen.style.display = 'block'
 
     modelViewerAr.ar = false;
+    // Restaurar controles e instrucciones al salir
     if(instructions){
         instructions.classList.remove('hidden');
+    }
+    if (modelControls) {
+        modelControls.style.display = '';
+    }
+    if (arControls) {
+        arControls.style.display = '';
     }
 })
 
@@ -81,6 +101,10 @@ modelViewerAr.addEventListener('ar-status',(event)=>{
             setTimeout(()=>{
                 instructions.classList.add('hidden');
             },3000)
+        }
+        // Ocultar botones AR cuando la cámara esté activa
+        if (arControls) {
+            arControls.style.display = 'none';
         }
     }
     if(event.detail.status ==='failed'){
