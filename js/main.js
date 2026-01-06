@@ -14,10 +14,10 @@ const modelControls = document.querySelector('.model-controls');
 const arControls = document.querySelector('#ar-container .ar-controls');
 
 //ver modelo estatico
-startButton.addEventListener('click',()=>{
+startButton.addEventListener('click', () => {
     console.log('Mostrando modelo 3d...');
     startScreen.style.display = 'none'
-    modelScreen.style.display = 'block'
+    modelScreen.style.display = 'flex'
     // Asegurar que el model-viewer sea visible (casos donde el CSS pueda ocultarlo)
     if (modelViewer) {
         modelViewer.style.display = '';
@@ -27,13 +27,13 @@ startButton.addEventListener('click',()=>{
 })
 
 //volver al inicio
-backBtn.addEventListener('click',()=>{
+backBtn.addEventListener('click', () => {
     modelScreen.style.display = 'none'
-    startScreen.style.display = 'block'
+    startScreen.style.display = 'flex'
 })
 
 //activar ar camara
-activateArBtn.addEventListener('click', ()=>{
+activateArBtn.addEventListener('click', () => {
     console.log('Modo AR');
     modelScreen.style.display = 'none';
     arContainer.style.display = 'block';
@@ -59,16 +59,14 @@ activateArBtn.addEventListener('click', ()=>{
 })
 
 //salir de Ar
-exitArBtn.addEventListener('click',()=>{
+exitArBtn.addEventListener('click', () => {
     console.log('saliendo de AR..')
     arContainer.style.display = 'none'
-    modelScreen.style.display = 'block'
+    modelScreen.style.display = 'flex'
 
     modelViewerAr.ar = false;
     // Restaurar controles e instrucciones al salir
-    if(instructions){
-        instructions.classList.remove('hidden');
-    }
+
     if (modelControls) {
         modelControls.style.display = '';
     }
@@ -77,49 +75,7 @@ exitArBtn.addEventListener('click',()=>{
     }
 })
 
-// reubicar en ar
 
-resetBtn.addEventListener('click',()=>{
-    console.log('Reubicando modelo ...');
-    modelViewerAr.ar = false
-
-    setTimeout(()=>{
-        modelViewerAr.ar = true
-        if(instructions){
-            instructions.classList.remove('hidden');
-        }
-    },100)
-})
-
-//eventos ar
-modelViewerAr.addEventListener('ar-status',(event)=>{
-    console.log('Estado Ar: ',event.detail.status);
-    
-    if(event.detail.status ==='session-started'){
-        console.log('Sesion ar inicada - Escaneando terreno..');
-        if(instructions){
-            setTimeout(()=>{
-                instructions.classList.add('hidden');
-            },3000)
-        }
-        // Ocultar botones AR cuando la cámara esté activa
-        if (arControls) {
-            arControls.style.display = 'none';
-        }
-    }
-    if(event.detail.status ==='failed'){
-        console.error('Fallo la sesion',event.detail.statusMessage);
-        alert('No se pudo iniciar la cámara AR')
-    }
-})
-
-// Ocultar instrucciones al tocar para colocar modelo
-modelViewerAr.addEventListener('click', () => {
-    console.log('Usuario tocó la pantalla para colocar modelo');
-    if (instructions && !instructions.classList.contains('hidden')) {
-        instructions.classList.add('hidden');
-    }
-});
 
 // Prevenir scroll en modelo AR
 document.addEventListener('touchmove', (e) => {
