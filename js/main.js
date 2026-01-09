@@ -10,45 +10,50 @@ const exitArBtn = document.getElementById('exit-ar-btn')
 const modelViewer = document.getElementById('house-modal');
 const modelViewerAr = document.getElementById('ar-model')
 
+//rastrea el modelo colocado
+let modelPlaced = false;
+
 //modelo estatico
-startButton.addEventListener('click',()=>{
+startButton.addEventListener('click', () => {
     console.log('Mostrando modelo 3D');
     startScreen.style.display = 'none';
     modelScreen.style.display = 'flex'
 })
 
 //regresar al inicio
-backBtn.addEventListener('click',()=>{
+backBtn.addEventListener('click', () => {
     modelScreen.style.display = 'none';
     startScreen.style.display = 'flex';
 })
 
 //activar modo AR - contenedor AR
-activateArBtn.addEventListener('click',()=>{
+activateArBtn.addEventListener('click', () => {
     console.log('Activando AR');
-    
-    if(arContainer && modelScreen){
+
+    modelPlaced = false
+
+    if (arContainer && modelScreen) {
         //ocultar pantalla del modelo
         modelScreen.style.display = 'none';
 
         //mostrar contenedor AR
         arContainer.style.display = 'flex';
         console.log('Contenedor activado');
-        
+
         //activar cámara AR
-        if(modelViewerAr && modelViewerAr.activateAR){
-            modelViewerAr.activateAR();
-            console.log('Cámara AR activada');
+        if (modelViewerAr) {
+            modelViewerAr.setAttribute('camera-controls', '');
+            modelViewerAr.style.pointerEvents = 'auto'
         }
-        
-    }else{
+
+    } else {
         console.error('Elemento AR no encontrado');
-        
+
     }
 })
 
 //salir de AR
-exitArBtn.addEventListener('click',()=>{
+exitArBtn.addEventListener('click', () => {
     console.log('Saliendo de AR  ');
     //ocultar contenedor AR
     arContainer.style.display = 'none';
@@ -56,26 +61,57 @@ exitArBtn.addEventListener('click',()=>{
     //mostrar pantalla del modelo
     modelScreen.style.display = 'flex';
 
-    if(modelViewerAr && modelViewerAr.exitAR){
-        modelViewerAr.exitAR();
+    modelPlaced = false;
+
+    if (modelViewerAr) {
+        modelViewerAr.setAttribute('camera-controls', '');
+        modelViewerAr.style.pointerEvents = 'auto'
     }
 })
 
 //configurar modelo AR
-if(modelViewerAr){
-    //resea cuando salga de AR
-    modelViewerAr.addEventListener('ar-status',(event)=>{
-        console.log('Estado Ar:',event.detail.status);
+if (modelViewerAr) {
+    //detecta cuando el modelo es colocado
+    modelViewerAr.addEventListener('click', () => {
+        if (!modelPlaced && modelViewerAr.hasAttribute('ar')) {
+            console.log('Modelo colocado - bloqueado');
+            modelPlaced = true;
 
-        //si sale de AR, vuelve a la pantalla del modelo
-        if(event.detail.status === 'not-presenting' || event.detail.status === 'session-ended'){
-            console.log('Saliendo de Ar automaticamnete');
-            arContainer.style.display = 'none';
-            modelScreen.style.display = 'flex';
+            //quita controles de camara
+            modelViewerAr.removeAttribute('camera-controls');
+
+            //deshabilita interacciones
+            modelViewerAr.style.pointerEvents = 'none'
+
+            modelViewerAr.classList.add('model-locked');
+
+            console.log('modelo bloqueado');
+
         }
-        
     })
 }
+
+modelViewerAr.addEventListener('ar-status', (event) => {
+    console.log('Estado ar: ', event.detail.status);
+
+    //salir del AR vuelve al modelo
+
+    if (event.detail.status === 'not-presenting' || event.detail.status === 'session-ended') {
+        console.log('Saliendo AR automaticamente');
+        arContainer.style.display = 'none'
+        modelScreen.style.display = 'flex';
+
+        //resetea estato para la proxima vez
+        modelPlaced = false
+
+        //vuelve los controles
+        if (modelViewerAr) {
+            modelViewerAr.setAttribute('camera-controls', '');
+            modelViewerAr.style.pointerEvents = 'auto'
+            modelViewerAr.classList.remove('model-locked');
+        }
+    }
+})
 
 //detecta dispositivos
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
@@ -84,7 +120,7 @@ const isAndroid = /Android/.test(navigator.userAgent)
 console.log(`Dispositivo ${isIOS ? 'ios' : isAndroid ? 'Android' : 'Desktop'}`);
 
 //depurar
-console.log('Elementos cargados',{
+console.log('Elementos cargados', {
     startScreen: !!startScreen,
     modelScreen: !!modelScreen,
     arContainer: !!arContainer,
