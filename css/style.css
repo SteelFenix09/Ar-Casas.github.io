@@ -108,10 +108,11 @@ model-viewer {
 
 /* Debug / ensure viewer has visible area */
 model-viewer {
-    min-height: 60vh; /* ensure it's visible on small screens */
+    min-height: 60vh;
+    /* ensure it's visible on small screens */
     display: block;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
-    border: 2px dashed rgba(255,255,255,0.08);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.02));
+    border: 2px dashed rgba(255, 255, 255, 0.08);
 }
 
 /* Three.js container */
@@ -125,6 +126,7 @@ model-viewer {
     background: #000;
     position: relative;
 }
+
 #threejs-container canvas {
     width: 100% !important;
     height: 100% !important;
@@ -190,10 +192,6 @@ model-viewer {
 }
 
 .ar-button {
-    position: absolute;
-    bottom: 100px; /* Por encima de los controles */
-    left: 50%;
-    transform: translateX(-50%);
     background: #667eea;
     color: #fff;
     border: none;
@@ -201,13 +199,12 @@ model-viewer {
     border-radius: 25px;
     font-size: 1rem;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
+
 }
 
 .ar-button:hover {
     background: #5a67d8;
-    transform: translateX(-50%) translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
@@ -235,6 +232,7 @@ model-viewer {
     border: 1px solid rgba(255, 255, 255, 0.2);
     margin-bottom: 20px;
 }
+
 #ar-container {
     display: none;
     flex-direction: column;
