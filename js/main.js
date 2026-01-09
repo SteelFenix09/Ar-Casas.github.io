@@ -30,7 +30,7 @@ backBtn.addEventListener('click', () => {
 activateArBtn.addEventListener('click', () => {
     console.log('Activando AR');
 
-    modelPlaced = false
+    modelPlaced = false;
 
     if (arContainer && modelScreen) {
         //ocultar pantalla del modelo
@@ -40,7 +40,16 @@ activateArBtn.addEventListener('click', () => {
         arContainer.style.display = 'flex';
         console.log('Contenedor activado');
 
+        //mostrar contenedo AR
+        arContainer.style.display = 'flex';
+        console.log('Contenedor activo');
+
         //activar cámara AR
+        if (modelViewerAr && modelViewerAr.activateAR) {
+            modelViewerAr.activateAR();
+            console.log('Cámara AR activada');
+        }
+
         if (modelViewerAr) {
             modelViewerAr.setAttribute('camera-controls', '');
             modelViewerAr.style.pointerEvents = 'auto'
@@ -66,6 +75,7 @@ exitArBtn.addEventListener('click', () => {
     if (modelViewerAr) {
         modelViewerAr.setAttribute('camera-controls', '');
         modelViewerAr.style.pointerEvents = 'auto'
+        modelViewerAr.classList.remove('model-locked');
     }
 })
 
@@ -83,35 +93,47 @@ if (modelViewerAr) {
             //deshabilita interacciones
             modelViewerAr.style.pointerEvents = 'none'
 
+
             modelViewerAr.classList.add('model-locked');
 
             console.log('modelo bloqueado');
 
         }
     })
+    //resetea saliedno AR
+    modelViewerAr.addEventListener('ar-status', (event) => {
+        console.log('Estado ar: ', event.detail.status);
+
+        //salir del AR vuelve al modelo
+
+        if (event.detail.status === 'not-presenting' || event.detail.status === 'session-ended') {
+            console.log('Saliendo AR automaticamente');
+            arContainer.style.display = 'none'
+            modelScreen.style.display = 'flex';
+
+            //resetea estato para la proxima vez
+            modelPlaced = false
+
+            //vuelve los controles
+            if (modelViewerAr) {
+                modelViewerAr.setAttribute('camera-controls', '');
+                modelViewerAr.style.pointerEvents = 'auto'
+                modelViewerAr.classList.remove('model-locked');
+            }
+        }
+        if(event.detail.status === 'session-started'){
+            console.log('Sesion iniciada');
+            modelPlaced = false;
+            if(modelViewerAr){
+                modelViewerAr.setAttribute('camera-controls', '');
+                modelViewerAr.style.pointerEvents = 'auto'
+                modelViewerAr.classList.remove('model-locked');
+            }
+        }
+    })
 }
 
-modelViewerAr.addEventListener('ar-status', (event) => {
-    console.log('Estado ar: ', event.detail.status);
 
-    //salir del AR vuelve al modelo
-
-    if (event.detail.status === 'not-presenting' || event.detail.status === 'session-ended') {
-        console.log('Saliendo AR automaticamente');
-        arContainer.style.display = 'none'
-        modelScreen.style.display = 'flex';
-
-        //resetea estato para la proxima vez
-        modelPlaced = false
-
-        //vuelve los controles
-        if (modelViewerAr) {
-            modelViewerAr.setAttribute('camera-controls', '');
-            modelViewerAr.style.pointerEvents = 'auto'
-            modelViewerAr.classList.remove('model-locked');
-        }
-    }
-})
 
 //detecta dispositivos
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
