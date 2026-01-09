@@ -43,29 +43,27 @@
 
             <!-- Controles mínimos: solo botón para activar AR y volver -->
             <div class="model-controls" style="margin-top:12px; text-align:center;">
-                <button id="activate-ar-btn" class="primary-btn">Ver AR</button>
+                <button id="ar-button" class="ar-button">Ver AR</button>
                 <button id="back-btn" class="control-btn">Volver</button>
             </div>
         </div>
     </div>
 
-    <!-- Contenedor AR: usado para mostrar el modelo en modo AR y controles de cámara -->
-    <div id="ar-container" class="screen" style="display: none; position: relative;">
-        <model-viewer id="house-modal-ar" src="./assets/modelos/Astronaut.glb" ar ios-src="./assets/modelos/Astronaut.usdz"
-            camera-controls environment-image="neutral" shadow-intensity="1.5" exposure="1" shadow-softness="0.8"
-            alt="Modelo 3d AR" style="width: 100%; height: 100%; display:block;">
-            <!-- Si deseas puedes incluir un botón AR personalizado en este slot -->
-        </model-viewer>
-
-        <div class="ar-controls" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);">
-            <button id="exit-ar-btn" class="control-btn">Salir AR</button>
+    <!-- Contenedor AR simplificado -->
+    <div id="ar-container" class="screen" style="display: none;">
+        <div class="ar-content">
+            <model-viewer id="ar-model" src="./assets/modelos/Astronaut.glb" camera-controls ar
+                ar-modes="webxr scene-viewer quick-look" environment-image="neutral" shadow-intensity="1.5" exposure="1"
+                shadow-softness="0.8" alt="Modelo 3d de una casa en AR" style="width: 100%; height: 70%;">
+                <div class="progress-bar hide" slot="progress-bar">
+                    <div class="update-bar"></div>
+                </div>
+            </model-viewer>
         </div>
-        <div class="floating-instructions" id="ar-instructions" style="display:block;">
-            Toque el boton de la realidad aumentada para colocar el modelo
+        <div class="ar-controls">
+            <button id="exit-ar-btn" class="control-btn">Salir de AR</button>
         </div>
     </div>
-
- 
 
     <script src="./js/main.js"></script>
 </body>

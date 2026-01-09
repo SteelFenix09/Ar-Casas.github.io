@@ -1,108 +1,94 @@
-//Elementos del DOM
+// elementon del DOM
+
 const startScreen = document.getElementById('start-screen');
 const modelScreen = document.getElementById('model-screen');
 const arContainer = document.getElementById('ar-container');
-const startButton = document.getElementById('start-button');
-const activateArBtn = document.getElementById('activate-ar-btn');
+const startButton = document.getElementById('start-button')
 const backBtn = document.getElementById('back-btn');
-const exitArBtn = document.getElementById('exit-ar-btn');
-const instructions = document.getElementById('ar-instructions');
-const resetBtn = document.getElementById('reset-btn-ar');
+const activateArBtn = document.getElementById('ar-button')
+const exitArBtn = document.getElementById('exit-ar-btn')
 const modelViewer = document.getElementById('house-modal');
-const modelViewerAr = document.getElementById('house-modal-ar');
-const modelControls = document.querySelector('.model-controls');
-const arControls = document.querySelector('#ar-container .ar-controls');
+const modelViewerAr = document.getElementById('ar-model')
 
-//ver modelo estatico
-startButton.addEventListener('click', () => {
-    console.log('Mostrando modelo 3d...');
-    startScreen.style.display = 'none'
+//modelo estatico
+startButton.addEventListener('click',()=>{
+    console.log('Mostrando modelo 3D');
+    startScreen.style.display = 'none';
     modelScreen.style.display = 'flex'
-    // Asegurar que el model-viewer sea visible (casos donde el CSS pueda ocultarlo)
-    if (modelViewer) {
-        modelViewer.style.display = '';
-        modelViewer.style.visibility = 'visible';
-        modelViewer.style.opacity = '1';
-    }
 })
 
-//volver al inicio
-backBtn.addEventListener('click', () => {
-    modelScreen.style.display = 'none'
-    startScreen.style.display = 'flex'
-})
-
-//activar ar camara
-activateArBtn.addEventListener('click', () => {
-    console.log('Modo AR');
+//regresar al inicio
+backBtn.addEventListener('click',()=>{
     modelScreen.style.display = 'none';
-    if (arContainer) {
-        arContainer.style.display = 'block';
-    } else {
-        console.warn('No se encontró #ar-container en el DOM');
-    }
+    startScreen.style.display = 'flex';
+})
 
-    // Ocultar controles en pantalla estática cuando se activa AR
-    if (modelControls) {
-        modelControls.style.display = 'none';
-    }
+//activar modo AR - contenedor AR
+activateArBtn.addEventListener('click',()=>{
+    console.log('Activando AR');
+    
+    if(arContainer && modelScreen){
+        //ocultar pantalla del modelo
+        modelScreen.style.display = 'none';
 
-    // Intentar activar la cámara simulando click en el botón AR interno del <model-viewer>
-    setTimeout(() => {
-        try {
-            if (modelViewerAr) {
-                // Intentar activar el botón AR interno (si está disponible)
-                const innerArBtn = modelViewerAr.querySelector('button[slot="ar-button"]');
-                if (innerArBtn) {
-                    innerArBtn.click();
-                } else {
-                    console.warn('Botón AR interno no encontrado en #house-modal-ar — el usuario puede tocar el botón AR manualmente.');
-                }
-            } else {
-                console.warn('Elemento #house-modal-ar no encontrado');
-            }
-        } catch (err) {
-            console.error('Error al intentar activar AR:', err);
+        //mostrar contenedor AR
+        arContainer.style.display = 'flex';
+        console.log('Contenedor activado');
+        
+        //activar cámara AR
+        if(modelViewerAr && modelViewerAr.activateAR){
+            modelViewerAr.activateAR();
+            console.log('Cámara AR activada');
         }
-    }, 200);
-})
-
-//salir de Ar
-exitArBtn.addEventListener('click', () => {
-    console.log('saliendo de AR..')
-    if (arContainer) arContainer.style.display = 'none';
-    modelScreen.style.display = 'flex'
-
-    // No forzamos propiedades internas del componente; simplemente restauramos la UI.
-    // Restaurar controles e instrucciones al salir
-
-    if (modelControls) {
-        modelControls.style.display = '';
-    }
-    if (arControls) {
-        arControls.style.display = '';
+        
+    }else{
+        console.error('Elemento AR no encontrado');
+        
     }
 })
 
+//salir de AR
+exitArBtn.addEventListener('click',()=>{
+    console.log('Saliendo de AR  ');
+    //ocultar contenedor AR
+    arContainer.style.display = 'none';
 
+    //mostrar pantalla del modelo
+    modelScreen.style.display = 'flex';
 
-// Prevenir scroll en modelo AR
-document.addEventListener('touchmove', (e) => {
-    if (modelViewerAr && (e.target === modelViewerAr || modelViewerAr.contains(e.target))) {
-        e.preventDefault();
+    if(modelViewerAr && modelViewerAr.exitAR){
+        modelViewerAr.exitAR();
     }
-}, { passive: false });
+})
 
-// Detectar dispositivo
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-const isAndroid = /Android/.test(navigator.userAgent);
+//configurar modelo AR
+if(modelViewerAr){
+    //resea cuando salga de AR
+    modelViewerAr.addEventListener('ar-status',(event)=>{
+        console.log('Estado Ar:',event.detail.status);
 
-console.log(`Dispositivo: ${isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop'}`);
-
-if (isIOS) {
-    console.log('📱 iOS detectado - Usando Quick Look');
-    document.body.classList.add('ios');
-} else if (isAndroid) {
-    console.log('🤖 Android detectado - Usando Scene Viewer');
-    document.body.classList.add('android');
+        //si sale de AR, vuelve a la pantalla del modelo
+        if(event.detail.status === 'not-presenting' || event.detail.status === 'session-ended'){
+            console.log('Saliendo de Ar automaticamnete');
+            arContainer.style.display = 'none';
+            modelScreen.style.display = 'flex';
+        }
+        
+    })
 }
+
+//detecta dispositivos
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+const isAndroid = /Android/.test(navigator.userAgent)
+
+console.log(`Dispositivo ${isIOS ? 'ios' : isAndroid ? 'Android' : 'Desktop'}`);
+
+//depurar
+console.log('Elementos cargados',{
+    startScreen: !!startScreen,
+    modelScreen: !!modelScreen,
+    arContainer: !!arContainer,
+    modelViewer: !!modelViewer,
+    modelViewerAr: !!modelViewerAr,
+    exitArBtn: !!exitArBtn
+});
