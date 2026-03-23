@@ -115,13 +115,22 @@ backBtn.addEventListener('click', () => {
 });
 
 // ── Activar AR ────────────────────────────────────────────────────────────────
-arButton.addEventListener('click', () => {
+arButton.addEventListener('click', async () => {
     const activeModel = MODELS[currentSlide];
     arModel.setAttribute('src', activeModel.src);
 
     modelScreen.style.display = 'none';
     arContainer.style.display = 'flex';
-    startScreen()
+
+    // Solicitar acceso a cámara
+    try {
+        camaraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        if (camaraPreview) {
+            camaraPreview.srcObject = camaraStream;
+        }
+    } catch (error) {
+        console.warn('No se pudo acceder a la cámara:', error);
+    }
 
     if (arModel.activateAR) {
         arModel.activateAR();
