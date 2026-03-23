@@ -25,7 +25,10 @@ const startButton   = document.getElementById('start-button');
 const backBtn       = document.getElementById('back-btn');
 const arButton      = document.getElementById('ar-button');
 const exitArBtn     = document.getElementById('exit-ar-btn');
+const captureBtn    = document.getElementById('capture-btn');
 const arModel       = document.getElementById('ar-model');
+const cameraPreview = document.getElementById('camera-preview');
+const photoCanvas   = document.getElementById('photo-canvas');
 
 const carouselTrack = document.getElementById('carousel-track');
 const prevBtn       = document.getElementById('prev-btn');
@@ -38,7 +41,7 @@ const totalModelsEl = document.getElementById('total-models');
 
 // ── Estado del carrusel ───────────────────────────────────────────────────────
 let currentSlide = 0;
-let modelPlaced  = false;
+let cameraStream = null;
 
 // ── Inicializar carrusel ──────────────────────────────────────────────────────
 totalModelsEl.textContent = MODELS.length;
@@ -117,14 +120,11 @@ arButton.addEventListener('click', () => {
 
     modelScreen.style.display = 'none';
     arContainer.style.display = 'flex';
-    modelPlaced = false;
+    startCamera();
 
     if (arModel.activateAR) {
         arModel.activateAR();
     }
-
-    arModel.setAttribute('camera-controls', '');
-    arModel.style.pointerEvents = 'auto';
 });
 
 // ── Salir de AR (botón manual) ────────────────────────────────────────────────
@@ -134,17 +134,35 @@ exitArBtn.addEventListener('click', () => {
     resetAR();
 });
 
+captureBtn.addEventListener('click', async () => {
+    if (arModel && arModel.toBlob) {
+        try {
+            const blob = await arModel.toBlob({ idealAspect: true });
+            if (blob) {
+                downloadBlob(blob);
+                return;
+            }
+        } catch (error) {
+            console.warn('No se pudo capturar desde model-viewer, intentando con cámara:', error);
+        }
+    }
+
+    if (!cameraPreview || !photoCanvas || !cameraPreview.videoWidth || !cameraPreview.videoHeight) {
+        alert('No hay señal de cámara disponible todavía para tomar foto.');
+        return;
+    }
+
+    const ctx = photoCanvas.getContext('2d');
+    photoCanvas.width = cameraPreview.videoWidth;
+    photoCanvas.height = cameraPreview.videoHeight;
+    ctx.drawImage(cameraPreview, 0, 0, photoCanvas.width, photoCanvas.height);
+    photoCanvas.toBlob(blob => {
+        if (blob) downloadBlob(blob);
+    }, 'image/jpeg', 0.95);
+});
+
 // ── Eventos del AR model-viewer ───────────────────────────────────────────────
 if (arModel) {
-    arModel.addEventListener('click', () => {
-        if (!modelPlaced && arModel.hasAttribute('ar')) {
-            modelPlaced = true;
-            arModel.removeAttribute('camera-controls');
-            arModel.style.pointerEvents = 'none';
-            arModel.classList.add('model-locked');
-        }
-    });
-
     arModel.addEventListener('ar-status', e => {
         console.log('Estado AR:', e.detail.status);
 
@@ -153,24 +171,53 @@ if (arModel) {
             modelScreen.style.display = 'flex';
             resetAR();
         }
-
-        if (e.detail.status === 'session-started') {
-            modelPlaced = false;
-            arModel.setAttribute('camera-controls', '');
-            arModel.style.pointerEvents = 'auto';
-            arModel.classList.remove('model-locked');
-        }
     });
 }
 
 function resetAR() {
-    modelPlaced = false;
-    if (arModel) {
-        arModel.setAttribute('camera-controls', '');
-        arModel.style.pointerEvents = 'auto';
-        arModel.classList.remove('model-locked');
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+    if (cameraPreview) {
+        cameraPreview.srcObject = null;
     }
 }
+
+async function startCamera() {
+    if (!navigator.mediaDevices?.getUserMedia || !cameraPreview) return;
+
+    try {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+        }
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: 'environment' } },
+            audio: false,
+        });
+        cameraPreview.srcObject = cameraStream;
+        await cameraPreview.play();
+    } catch (error) {
+        console.warn('No se pudo iniciar la cámara automáticamente:', error);
+    }
+}
+
+function downloadBlob(blob) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ar-foto-${Date.now()}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+window.addEventListener('beforeunload', () => {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+    }
+});
 
 // ── Detección de dispositivo ──────────────────────────────────────────────────
 const isIOS     = /iPad|iPhone|iPod/.test(navigator.userAgent);
