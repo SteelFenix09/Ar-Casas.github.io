@@ -18,27 +18,31 @@ const MODELS = [
 ];
 
 // ── Referencias DOM ───────────────────────────────────────────────────────────
-const startScreen   = document.getElementById('start-screen');
-const modelScreen   = document.getElementById('model-screen');
-const arContainer   = document.getElementById('ar-container');
-const startButton   = document.getElementById('start-button');
-const backBtn       = document.getElementById('back-btn');
-const arButton      = document.getElementById('ar-button');
-const exitArBtn     = document.getElementById('exit-ar-btn');
-const arModel       = document.getElementById('ar-model');
+const startScreen = document.getElementById('start-screen');
+const modelScreen = document.getElementById('model-screen');
+const arContainer = document.getElementById('ar-container');
+const startButton = document.getElementById('start-button');
+const backBtn = document.getElementById('back-btn');
+const arButton = document.getElementById('ar-button');
+const exitArBtn = document.getElementById('exit-ar-btn');
+const arModel = document.getElementById('ar-model');
+
+const captureBtn = document.getElementById('capture-btn');
+const camaraPreview = document.getElementById('camara-preview');
+const photoCanvas = document.getElementById('photo-canvas');
 
 const carouselTrack = document.getElementById('carousel-track');
-const prevBtn       = document.getElementById('prev-btn');
-const nextBtn       = document.getElementById('next-btn');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
 const dotsContainer = document.getElementById('dots-container');
-const modelNameEl   = document.getElementById('model-name');
-const modelDescEl   = document.getElementById('model-desc');
-const currentIndexEl= document.getElementById('current-index');
+const modelNameEl = document.getElementById('model-name');
+const modelDescEl = document.getElementById('model-desc');
+const currentIndexEl = document.getElementById('current-index');
 const totalModelsEl = document.getElementById('total-models');
 
 // ── Estado del carrusel ───────────────────────────────────────────────────────
 let currentSlide = 0;
-let modelPlaced  = false;
+let camaraStream = null;
 
 // ── Inicializar carrusel ──────────────────────────────────────────────────────
 totalModelsEl.textContent = MODELS.length;
@@ -84,7 +88,7 @@ nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
 
 // ── Swipe táctil ─────────────────────────────────────────────────────────────
 let touchStartX = 0;
-let touchEndX   = 0;
+let touchEndX = 0;
 
 carouselTrack.addEventListener('touchstart', e => {
     touchStartX = e.changedTouches[0].screenX;
@@ -117,14 +121,14 @@ arButton.addEventListener('click', () => {
 
     modelScreen.style.display = 'none';
     arContainer.style.display = 'flex';
-    modelPlaced = false;
+    startScreen()
 
     if (arModel.activateAR) {
         arModel.activateAR();
     }
 
-    arModel.setAttribute('camera-controls', '');
-    arModel.style.pointerEvents = 'auto';
+    /*arModel.setAttribute('camera-controls', '');
+    arModel.style.pointerEvents = 'auto'; */
 });
 
 // ── Salir de AR (botón manual) ────────────────────────────────────────────────
@@ -135,7 +139,7 @@ exitArBtn.addEventListener('click', () => {
 });
 
 // ── Eventos del AR model-viewer ───────────────────────────────────────────────
-if (arModel) {
+/*if (arModel) {
     arModel.addEventListener('click', () => {
         if (!modelPlaced && arModel.hasAttribute('ar')) {
             modelPlaced = true;
@@ -143,8 +147,35 @@ if (arModel) {
             arModel.style.pointerEvents = 'none';
             arModel.classList.add('model-locked');
         }
-    });
+    }); */
+captureBtn.addEventListener('click', async () => {
+    if (arModel && arModel.toBlob) {
+        try {
+            const blob = await arModel.toBlob({ idealAspect: true })
+            if (blob) {
+                downloadBlob(blob)
+                return
+            }
+        } catch (error) {
+            console.warn('No se pudo capturar desde el model-viewer, intentando con camara: ', error)
+        }
+    }
 
+    if (!camaraPreview || !photoCanvas || !camaraPreview.videoWidth || !camaraPreview.videoHeight) {
+        alert('No hay señal de camara disponible todavia para tomar foto.')
+        return
+    }
+
+    const ctx = photoCanvas.getContext('2d')
+    photoCanvas.width = camaraPreview.videoWidth
+    photoCanvas.height = camaraPreview.videoHeight
+    ctx.drawImage(camaraPreview, 0, 0, photoCanvas.width, photoCanvas.height)
+    photoCanvas.toBlob(blob => {
+        if (blob) downloadBlob(blob)
+    }, 'image/jpeg', 0.95)
+})
+
+if (arModel) {
     arModel.addEventListener('ar-status', e => {
         console.log('Estado AR:', e.detail.status);
 
@@ -154,25 +185,49 @@ if (arModel) {
             resetAR();
         }
 
-        if (e.detail.status === 'session-started') {
-            modelPlaced = false;
-            arModel.setAttribute('camera-controls', '');
-            arModel.style.pointerEvents = 'auto';
-            arModel.classList.remove('model-locked');
-        }
+        /* if (e.detail.status === 'session-started') {
+             modelPlaced = false;
+             arModel.setAttribute('camera-controls', '');
+             arModel.style.pointerEvents = 'auto';
+             arModel.classList.remove('model-locked');
+         } */
     });
 }
 
 function resetAR() {
-    modelPlaced = false;
+  /*  modelPlaced = false;
     if (arModel) {
         arModel.setAttribute('camera-controls', '');
         arModel.style.pointerEvents = 'auto';
         arModel.classList.remove('model-locked');
-    }
+    } */
+   if(camaraStream){
+    camaraStream.getTracks().forEach(track => track.stop())
+    camaraStream = null
+   }
+   if(camaraPreview){
+    camaraPreview.srcObject = null
+   }
 }
 
+function downloadBlob(blob){
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `ar-foto-${Date.now()}.jpg`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    setTimeout(()=> URL.revokeObjectURL(url),1500)
+}
+
+window.addEventListener('beforeunload', () => {
+    if (camaraStream){
+        camaraStream.getTracks().forEach(track => track.stop())
+    }
+})
+
 // ── Detección de dispositivo ──────────────────────────────────────────────────
-const isIOS     = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 const isAndroid = /Android/.test(navigator.userAgent);
 console.log(`Dispositivo: ${isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop'}`);

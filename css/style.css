@@ -352,6 +352,8 @@ body {
     bottom: 40px;
     left: 50%;
     transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
 }
 
 .control-btn {
@@ -395,7 +397,7 @@ body {
 }
 
 /* ── Model locked ────────────────────────────────────────────────────────── */
-model-viewer.model-locked { cursor: default !important; }
+/*model-viewer.model-locked { cursor: default !important; }
 model-viewer.model-locked::after {
     content: "✓ Modelo fijado";
     position: absolute;
@@ -410,4 +412,5 @@ model-viewer.model-locked::after {
     z-index: 1000;
     pointer-events: none;
     letter-spacing: .04em;
-}
+} */
+
