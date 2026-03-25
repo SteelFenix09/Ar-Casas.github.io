@@ -24,13 +24,14 @@ const arContainer = document.getElementById('ar-container');
 const startButton = document.getElementById('start-button');
 const backBtn = document.getElementById('back-btn');
 const arButton = document.getElementById('ar-button');
-const exitArBtn = document.getElementById('exit-ar-btn');
-const arModel = document.getElementById('ar-model');
 
+/*const exitArBtn = document.getElementById('exit-ar-btn');
 const captureBtn = document.getElementById('capture-btn');
 const camaraPreview = document.getElementById('camara-preview');
-const photoCanvas = document.getElementById('photo-canvas');
+const photoCanvas = document.getElementById('photo-canvas');*/
 
+
+const arModel = document.getElementById('ar-model');
 const carouselTrack = document.getElementById('carousel-track');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
@@ -42,7 +43,7 @@ const totalModelsEl = document.getElementById('total-models');
 
 // ── Estado del carrusel ───────────────────────────────────────────────────────
 let currentSlide = 0;
-let camaraStream = null;
+//let camaraStream = null;
 
 // ── Inicializar carrusel ──────────────────────────────────────────────────────
 totalModelsEl.textContent = MODELS.length;
@@ -124,10 +125,6 @@ arButton.addEventListener('click', async () => {
 
     // Solicitar acceso a cámara
     try {
-        camaraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        if (camaraPreview) {
-            camaraPreview.srcObject = camaraStream;
-        }
     } catch (error) {
         console.warn('No se pudo acceder a la cámara:', error);
     }
@@ -141,14 +138,14 @@ arButton.addEventListener('click', async () => {
 });
 
 // ── Salir de AR (botón manual) ────────────────────────────────────────────────
-exitArBtn.addEventListener('click', () => {
+/*exitArBtn.addEventListener('click', () => {
     arContainer.style.display = 'none';
     modelScreen.style.display = 'flex';
     resetAR();
 });
 
 // ── Eventos del AR model-viewer ───────────────────────────────────────────────
-/*if (arModel) {
+if (arModel) {
     arModel.addEventListener('click', () => {
         if (!modelPlaced && arModel.hasAttribute('ar')) {
             modelPlaced = true;
@@ -156,7 +153,8 @@ exitArBtn.addEventListener('click', () => {
             arModel.style.pointerEvents = 'none';
             arModel.classList.add('model-locked');
         }
-    }); */
+    }); 
+
 captureBtn.addEventListener('click', async () => {
     if (arModel && arModel.toBlob) {
         try {
@@ -182,7 +180,7 @@ captureBtn.addEventListener('click', async () => {
     photoCanvas.toBlob(blob => {
         if (blob) downloadBlob(blob)
     }, 'image/jpeg', 0.95)
-})
+}) */
 
 if (arModel) {
     arModel.addEventListener('ar-status', e => {
