@@ -8,12 +8,12 @@ const MODELS = [
     {
         name: 'Casa Rústica',
         description: 'Estilo colonial con acabados en madera y piedra natural. Perfecta para entornos campestres o suburbanos.',
-        src: './assets/modelos/Astronaut.glb', // reemplaza con tu modelo
+        src: './assets/modelos/Casas.glb', // reemplaza con tu modelo
     },
     {
         name: 'Casa Minimalista',
         description: 'Líneas puras, paleta neutra y máximo aprovechamiento de luz natural. Elegancia en cada detalle.',
-        src: './assets/modelos/casa_j.glb', // reemplaza con tu modelo
+        src: './assets/modelos/Casas_3.glb', // reemplaza con tu modelo
     },
 ];
 
