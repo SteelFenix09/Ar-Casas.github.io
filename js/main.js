@@ -25,8 +25,11 @@ const startButton = document.getElementById('start-button');
 const backBtn = document.getElementById('back-btn');
 const arButton = document.getElementById('ar-button');
 
-const arOverlay = document.getElementById('ar-overlay');
-const resetArBtn = document.getElementById('reset-ar-btn');
+/*const exitArBtn = document.getElementById('exit-ar-btn');
+const captureBtn = document.getElementById('capture-btn');
+const camaraPreview = document.getElementById('camara-preview');
+const photoCanvas = document.getElementById('photo-canvas');*/
+
 
 const arModel = document.getElementById('ar-model');
 const carouselTrack = document.getElementById('carousel-track');
@@ -113,35 +116,71 @@ backBtn.addEventListener('click', () => {
 });
 
 // ── Activar AR ────────────────────────────────────────────────────────────────
-arButton.addEventListener('click', () => {
+arButton.addEventListener('click', async () => {
     const activeModel = MODELS[currentSlide];
     arModel.setAttribute('src', activeModel.src);
 
     modelScreen.style.display = 'none';
     arContainer.style.display = 'flex';
 
-    setTimeout(() => {
-        if (arModel.activateAR) arModel.activateAR();
-    }, 300);
-});
-
-// Controles del overlay
-resetArBtn.addEventListener('click', () => {
-    if (arModel.activateAR) arModel.activateAR();
-});
-
-// Eventos importantes de model-viewer
-arModel.addEventListener('ar-status', e => {
-    console.log('AR Status:', e.detail.status);
-
-    if (e.detail.status === 'session-started' || e.detail.status === 'object-placed') {
-        arOverlay.classList.add('show');
-    } else if (['not-presenting', 'session-ended', 'failed'].includes(e.detail.status)) {
-        arOverlay.classList.remove('show');
-        arContainer.style.display = 'none';
-        modelScreen.style.display = 'flex';
+    // Solicitar acceso a cámara
+    try {
+    } catch (error) {
+        console.warn('No se pudo acceder a la cámara:', error);
     }
+
+    if (arModel.activateAR) {
+        arModel.activateAR();
+    }
+
+    /*arModel.setAttribute('camera-controls', '');
+    arModel.style.pointerEvents = 'auto'; */
 });
+
+// ── Salir de AR (botón manual) ────────────────────────────────────────────────
+/*exitArBtn.addEventListener('click', () => {
+    arContainer.style.display = 'none';
+    modelScreen.style.display = 'flex';
+    resetAR();
+});
+
+// ── Eventos del AR model-viewer ───────────────────────────────────────────────
+if (arModel) {
+    arModel.addEventListener('click', () => {
+        if (!modelPlaced && arModel.hasAttribute('ar')) {
+            modelPlaced = true;
+            arModel.removeAttribute('camera-controls');
+            arModel.style.pointerEvents = 'none';
+            arModel.classList.add('model-locked');
+        }
+    }); 
+
+captureBtn.addEventListener('click', async () => {
+    if (arModel && arModel.toBlob) {
+        try {
+            const blob = await arModel.toBlob({ idealAspect: true })
+            if (blob) {
+                downloadBlob(blob)
+                return
+            }
+        } catch (error) {
+            console.warn('No se pudo capturar desde el model-viewer, intentando con camara: ', error)
+        }
+    }
+
+    if (!camaraPreview || !photoCanvas || !camaraPreview.videoWidth || !camaraPreview.videoHeight) {
+        alert('No hay señal de camara disponible todavia para tomar foto.')
+        return
+    }
+
+    const ctx = photoCanvas.getContext('2d')
+    photoCanvas.width = camaraPreview.videoWidth
+    photoCanvas.height = camaraPreview.videoHeight
+    ctx.drawImage(camaraPreview, 0, 0, photoCanvas.width, photoCanvas.height)
+    photoCanvas.toBlob(blob => {
+        if (blob) downloadBlob(blob)
+    }, 'image/jpeg', 0.95)
+}) */
 
 if (arModel) {
     arModel.addEventListener('ar-status', e => {
@@ -152,11 +191,23 @@ if (arModel) {
             modelScreen.style.display = 'flex';
             resetAR();
         }
+
+        /* if (e.detail.status === 'session-started') {
+             modelPlaced = false;
+             arModel.setAttribute('camera-controls', '');
+             arModel.style.pointerEvents = 'auto';
+             arModel.classList.remove('model-locked');
+         } */
     });
 }
 
 function resetAR() {
-
+  /*  modelPlaced = false;
+    if (arModel) {
+        arModel.setAttribute('camera-controls', '');
+        arModel.style.pointerEvents = 'auto';
+        arModel.classList.remove('model-locked');
+    } */
    if(camaraStream){
     camaraStream.getTracks().forEach(track => track.stop())
     camaraStream = null
@@ -182,8 +233,6 @@ window.addEventListener('beforeunload', () => {
         camaraStream.getTracks().forEach(track => track.stop())
     }
 })
-
-console.log('%c🚀 Innova Archviz AR listo', 'color:#c8a96e;font-weight:bold');
 
 // ── Detección de dispositivo ──────────────────────────────────────────────────
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);

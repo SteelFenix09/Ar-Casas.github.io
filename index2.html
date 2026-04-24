@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,9 @@
     <title>Innova Archviz - AR Terreno</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <link rel="stylesheet" href="./css/style.css">
 </head>
@@ -24,13 +27,9 @@
             <div class="instructions-box">
                 <p class="instr-title">¿Cómo funciona?</p>
                 <ol>
-                    <li><span class="step-num">01</span> Busca una superficie plana y bien iluminada</li>
-                    <li><span class="step-num">02</span> Permite el acceso a la cámara</li>
-                    <li><span class="step-num">03</span> Una vez en AR:<br>
-                        • Mueve el teléfono lentamente para detectar el suelo<br>
-                        • Toca la pantalla para colocar el modelo<br>
-                        • Arrastra con <strong>1 dedo</strong> → mover/rotar<br>
-                        • Pellizca con <strong>2 dedos</strong> → cambiar tamaño</li>
+                    <li><span class="step-num">01</span>Busca una superficie plana</li>
+                    <li><span class="step-num">02</span>Mueve lentamente tu cámara para escanear</li>
+                    <li><span class="step-num">03</span>Toca para colocar el modelo</li>
                 </ol>
             </div>
 
@@ -40,12 +39,13 @@
                     <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
             </button>
-            <p class="note">Requiere cámara • Funciona mejor en móviles</p>
+            <p class="note">Requiere acceso a la cámara</p>
         </div>
     </div>
 
     <!-- ── Pantalla del carrusel de modelos ── -->
     <div id="model-screen" class="screen" style="display: none;">
+
         <div class="carousel-header">
             <button id="back-btn" class="icon-btn" title="Volver">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -55,93 +55,114 @@
             <span class="carousel-counter"><span id="current-index">1</span> / <span id="total-models">3</span></span>
         </div>
 
+        <!-- Track del carrusel -->
         <div class="carousel-wrapper">
             <div class="carousel-track" id="carousel-track">
+
                 <!-- Modelo 1 -->
                 <div class="carousel-slide" data-index="0">
-                    <model-viewer class="model-viewer-instance" src="./assets/modelos/casa_2.glb" camera-controls auto-rotate environment-image="neutral" shadow-intensity="1.5" exposure="1" shadow-softness="0.8" alt="Casa Moderna">
-                        <div class="progress-bar hide" slot="progress-bar"><div class="update-bar"></div></div>
+                    <model-viewer class="model-viewer-instance" src="./assets/modelos/casa_2.glb" camera-controls
+                        auto-rotate environment-image="neutral" shadow-intensity="1.5" exposure="1"
+                        shadow-softness="0.8"  alt="Casa Moderna">
+                        <div class="progress-bar hide" slot="progress-bar">
+                            <div class="update-bar"></div>
+                        </div>
                     </model-viewer>
                 </div>
+
                 <!-- Modelo 2 -->
                 <div class="carousel-slide" data-index="1">
-                    <model-viewer class="model-viewer-instance" src="./assets/modelos/Casas.glb" camera-controls auto-rotate environment-image="neutral" shadow-intensity="1.5" exposure="1" shadow-softness="0.8" alt="Casa Rústica">
-                        <div class="progress-bar hide" slot="progress-bar"><div class="update-bar"></div></div>
+                    <model-viewer class="model-viewer-instance" src="./assets/modelos/Casas.glb" camera-controls
+                        auto-rotate environment-image="neutral" shadow-intensity="1.5" exposure="1"
+                        shadow-softness="0.8"  alt="Casa Rústica">
+                        <div class="progress-bar hide" slot="progress-bar">
+                            <div class="update-bar"></div>
+                        </div>
                     </model-viewer>
                 </div>
+
                 <!-- Modelo 3 -->
                 <div class="carousel-slide" data-index="2">
-                    <model-viewer class="model-viewer-instance" src="./assets/modelos/Casas_3.glb" camera-controls auto-rotate environment-image="neutral" shadow-intensity="1.5" exposure="1" shadow-softness="0.8" alt="Casa Minimalista">
-                        <div class="progress-bar hide" slot="progress-bar"><div class="update-bar"></div></div>
+                    <model-viewer class="model-viewer-instance" src="./assets/modelos/Casas_3.glb" camera-controls
+                        auto-rotate environment-image="neutral" shadow-intensity="1.5" exposure="1"
+                        shadow-softness="0.8"  alt="Casa Minimalista">
+                        <div class="progress-bar hide" slot="progress-bar">
+                            <div class="update-bar"></div>
+                        </div>
                     </model-viewer>
                 </div>
-            </div>
+
+            </div><!-- /carousel-track -->
         </div>
 
+        <!-- Info + navegación -->
         <div class="model-info-panel">
             <div class="model-text">
                 <h2 id="model-name">Casa Moderna</h2>
-                <p id="model-desc">Diseño contemporáneo con grandes ventanales, techos planos y espacios abiertos. Ideal para terrenos amplios.</p>
+                <p id="model-desc">Diseño contemporáneo con grandes ventanales, techos planos y espacios abiertos. Ideal
+                    para terrenos amplios.</p>
             </div>
 
             <div class="carousel-nav">
-                <button id="prev-btn" class="nav-btn" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6" /></svg></button>
-                <div class="dots" id="dots-container"></div>
-                <button id="next-btn" class="nav-btn" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6" /></svg></button>
+                <button id="prev-btn" class="nav-btn" aria-label="Anterior">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                </button>
+
+                <div class="dots" id="dots-container">
+                    <!-- generados por JS -->
+                </div>
+
+                <button id="next-btn" class="nav-btn" aria-label="Siguiente">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M9 18l6-6-6-6" />
+                    </svg>
+                </button>
             </div>
 
             <button id="ar-button" class="ar-button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" /></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                    <path d="M8 21h8M12 17v4" />
+                </svg>
                 Ver en AR
             </button>
         </div>
+
     </div>
 
     <!-- ── Contenedor AR ── -->
     <div id="ar-container" class="screen" style="display: none;">
         <div class="ar-content">
-            <model-viewer 
-                id="ar-model" 
-                src="./assets/modelos/casa_2.glb"
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                ar-scale="fixed"           <!-- escala real 1:1 (ideal para casas) -->
-                ar-placement="floor"
-                environment-image="neutral" 
-                shadow-intensity="1.5" 
-                exposure="1"
-                shadow-softness="0.8" 
-                camera-controls
-                alt="Modelo 3D en AR"
-                style="width:100%;height:100%;">
-
+            <model-viewer id="ar-model" src="./assets/modelos/casa_2.glb" camera-controls ar
+                ar-modes="webxr scene-viewer quick-look" environment-image="neutral" shadow-intensity="1.5" exposure="1"
+                shadow-softness="0.8" alt="Modelo 3D en AR" style="width:100%;height:100%;">
                 <div class="progress-bar hide" slot="progress-bar">
                     <div class="update-bar"></div>
                 </div>
-
-                <!-- Botón de salida personalizado para WebXR -->
-                <button slot="exit-webxr-ar-button" id="custom-exit-ar-btn" class="exit-ar-btn">✕ Salir</button>
             </model-viewer>
         </div>
-
-        <!-- Overlay de instrucciones y controles (se muestra durante AR) -->
-        <div id="ar-overlay" class="ar-overlay">
-            <div id="ar-prompt" class="prompt-box">
-                <h3>📍 Cómo controlar la casa</h3>
-                <ul>
-                    <li><strong>Mueve el teléfono</strong> lentamente para detectar el suelo</li>
-                    <li><strong>Toca la pantalla</strong> para colocar el modelo</li>
-                    <li><strong>1 dedo</strong> → mover o rotar</li>
-                    <li><strong>2 dedos (pellizco)</strong> → cambiar tamaño</li>
-                </ul>
-            </div>
-
-            <div id="ar-controls-panel" class="ar-controls-panel">
-                <button id="reset-ar-btn" class="control-btn">🔄 Reiniciar modelo</button>
-            </div>
-        </div>
+       <!--  <div class="ar-controls">
+            <button id="capture-btn" class="control-btn secondary" title="Capturar foto">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                </svg>
+                <span>Foto</span>
+            </button>
+            <button id="exit-ar-btn" class="control-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Salir de AR
+            </button>
+        </div> -->
     </div>
 
+    <video id="camara-preview" autoplay playsinline muted style="display: none;"></video>
+    <canvas id="photo-canvas" style="display: none;"></canvas>
     <script src="./js/main.js"></script>
 </body>
+
 </html>
