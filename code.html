@@ -81,12 +81,12 @@
   </div>
 
   <script type="module">
-    import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js';
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
     import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
 
     // --- Ajustes de tu modelo -------------------------------------------
     // Ruta al modelo dentro de tu propio repo (súbelo junto a este html).
-    const MODEL_URL = './assets/modelos/Astronaut.glb'; // Hola
+    const MODEL_URL = './assets/modelos/Astronaut.glb';
     // Si el modelo sale gigante, casi siempre es porque se modeló en cm
     // en vez de metros. Prueba 0.01 primero (100 cm = 1 m). Si sale muy
     // chico o muy grande, ajusta este número — es prueba y error rápida.
