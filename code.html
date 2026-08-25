@@ -82,6 +82,18 @@
 
   <script type="module">
     import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+
+    // --- Ajustes de tu modelo -------------------------------------------
+    // Ruta al modelo dentro de tu propio repo (súbelo junto a este html).
+    const MODEL_URL = './assets/modelos/Astronaut.glb'; // Hola
+    // Si el modelo sale gigante, casi siempre es porque se modeló en cm
+    // en vez de metros. Prueba 0.01 primero (100 cm = 1 m). Si sale muy
+    // chico o muy grande, ajusta este número — es prueba y error rápida.
+    const MODEL_SCALE = 0.01;
+    const gltfLoader = new GLTFLoader();
+    let cachedModel = null; // se carga una sola vez y se clona en cada tap
+    // ----------------------------------------------------------------------
 
     const enterBtn   = document.getElementById('enter-ar');
     const unsupported= document.getElementById('unsupported');
@@ -169,8 +181,28 @@
 
     function placeModel(matrix) {
       if (placedModel) scene.remove(placedModel);
-      // Placeholder: una casa simple con primitivas. Sustituye esto por tu
-      // GLTFLoader cargando el modelo real de la casa.
+
+      // Placeholder mientras carga o si falla el modelo real: una casita
+      // simple con primitivas, para que siempre veas *algo* al tocar.
+      const placeholder = buildPlaceholder();
+      placeholder.matrixAutoUpdate = false;
+      placeholder.matrix.fromArray(matrix);
+      placedModel = placeholder;
+      scene.add(placedModel);
+      tutorialText.textContent = 'Cargando modelo…';
+
+      loadRealModel().then(model => {
+        if (!model) return; // falló la carga, se queda el placeholder
+        scene.remove(placedModel);
+        model.matrixAutoUpdate = false;
+        model.matrix.fromArray(matrix);
+        placedModel = model;
+        scene.add(placedModel);
+        tutorialText.textContent = 'Modelo colocado — toca otra vez para moverlo';
+      });
+    }
+
+    function buildPlaceholder() {
       const group = new THREE.Group();
       const base = new THREE.Mesh(
         new THREE.BoxGeometry(0.3, 0.15, 0.24),
@@ -184,13 +216,31 @@
       roof.rotation.y = Math.PI / 4;
       roof.position.y = 0.21;
       group.add(base, roof);
+      return group;
+    }
 
-      group.matrixAutoUpdate = false;
-      group.matrix.fromArray(matrix);
-      placedModel = group;
-      scene.add(placedModel);
+    async function loadRealModel() {
+      if (cachedModel) return cachedModel.clone();
+      try {
+        const gltf = await gltfLoader.loadAsync(MODEL_URL);
+        const model = gltf.scene;
 
-      tutorialText.textContent = 'Modelo colocado — toca otra vez para moverlo';
+        // Centra el modelo sobre su propia base (no sobre su centro
+        // geométrico), para que no aparezca "enterrado" o flotando.
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        model.position.x -= center.x;
+        model.position.z -= center.z;
+        model.position.y -= box.min.y;
+
+        model.scale.setScalar(MODEL_SCALE);
+
+        cachedModel = model;
+        return model.clone();
+      } catch (err) {
+        console.warn('No se pudo cargar el modelo, se queda el placeholder:', err);
+        return null;
+      }
     }
 
     function onResize() {
