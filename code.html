@@ -147,12 +147,12 @@
   </div>
 
   <script type="importmap">
-    {
-      "imports":{
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
-      }
-    }
-  </script>
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
 
   <script type="module">
     import * as THREE from 'three';
@@ -409,6 +409,17 @@
 
     enterBtn.addEventListener('click', startAR);
     exitBtn.addEventListener('click', () => xrSession && xrSession.end());
+
+    enterBtn.addEventListener('click', async () => {
+      try {
+        await startAR();
+      } catch (error) {
+        console.error(error);
+        unsupported.textContent =
+          'No se pudo iniciar AR. Revisa Chrome, ARCore y la consola.';
+        unsupported.style.display = 'block';
+      }
+    });
   </script>
 </body>
 
