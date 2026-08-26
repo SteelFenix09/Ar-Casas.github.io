@@ -325,13 +325,13 @@
     }
 
     async function startAR() {
-      if (!renderer) initThree();
-
       xrSession = await navigator.xr.requestSession('immersive-ar', {
         requiredFeatures: ['hit-test'],
         optionalFeatures: ['dom-overlay'],
         domOverlay: { root: overlay }
       });
+
+      if (!renderer) initThree();
 
       landing.style.display = 'none';
       overlay.style.display = 'flex';
@@ -414,9 +414,12 @@
       try {
         await startAR();
       } catch (error) {
-        console.error(error);
+        console.error('Error completo de AR:', error);
+
         unsupported.textContent =
-          'No se pudo iniciar AR. Revisa Chrome, ARCore y la consola.';
+          `Error AR: ${error.name || 'desconocido'} — ${error.message || 'sin detalle'
+          }`;
+
         unsupported.style.display = 'block';
       }
     });
