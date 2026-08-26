@@ -179,7 +179,11 @@
     const tutorialText = document.getElementById('tutorial-text');
     const statusDot = document.getElementById('status-dot');
 
-    let renderer, scene, camera, reticle, hitTestSource = null, hitTestSourceRequested = false, xrSession = null;
+    let renderer, scene, camera, reticle;
+    let hitTestSource = null;
+    let hitTestSourceRequested = false;
+    let xrSession = null;
+    let isStartingAR = false;
     let placedModel = null;
     let stableFrames = 0;      // cuántos frames seguidos el hit-test fue estable
     const STABLE_THRESHOLD = 12; // ~0.2s a 60fps antes de considerarlo "listo"
@@ -325,27 +329,50 @@
     }
 
     async function startAR() {
-      xrSession = await navigator.xr.requestSession('immersive-ar', {
-        requiredFeatures: ['hit-test'],
-        optionalFeatures: ['dom-overlay'],
-        domOverlay: { root: overlay }
-      });
+      if (isStartingAR || xrSession) return;
 
-      if (!renderer) initThree();
+      isStartingAR = true;
+      enterBtn.disabled = true;
+      enterBtn.textContent = 'Iniciando AR…';
 
-      landing.style.display = 'none';
-      overlay.style.display = 'flex';
+      try {
+        const session = await navigator.xr.requestSession('immersive-ar', {
+          requiredFeatures: ['hit-test'],
+          optionalFeatures: ['dom-overlay'],
+          domOverlay: { root: overlay }
+        });
 
-      renderer.xr.setReferenceSpaceType('local');
-      await renderer.xr.setSession(xrSession);
+        xrSession = session;
 
-      xrSession.addEventListener('end', onSessionEnd);
-      xrSession.addEventListener('select', onSelect);
+        if (!renderer) initThree();
 
-      renderer.setAnimationLoop(onFrame);
+        landing.style.display = 'none';
+        overlay.style.display = 'flex';
+
+        renderer.xr.setReferenceSpaceType('local');
+        await renderer.xr.setSession(xrSession);
+
+        xrSession.addEventListener('end', onSessionEnd);
+        xrSession.addEventListener('select', onSelect);
+
+        renderer.setAnimationLoop(onFrame);
+      } catch (error) {
+        console.error('Error AR:', error);
+        unsupported.textContent = `Error AR: ${error.name} — ${error.message}`;
+        unsupported.style.display = 'block';
+        xrSession = null;
+        enterBtn.disabled = false;
+        enterBtn.textContent = 'Iniciar AR';
+      } finally {
+        isStartingAR = false;
+      }
     }
 
     function onSessionEnd() {
+      xrSession = null;
+      isStartingAR = false;
+      enterBtn.disabled = false;
+      enterBtn.textContent = 'Iniciar AR';
       hitTestSource = null;
       hitTestSourceRequested = false;
       reticle.visible = false;
