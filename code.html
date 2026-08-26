@@ -338,8 +338,6 @@
       try {
         const session = await navigator.xr.requestSession('immersive-ar', {
           requiredFeatures: ['hit-test'],
-          optionalFeatures: ['dom-overlay'],
-          domOverlay: { root: overlay }
         });
 
         xrSession = session;
