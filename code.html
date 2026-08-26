@@ -1,88 +1,163 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Innova Archviz — AR Reticle Demo</title>
-<style>
-  :root{
-    --accent:#5ee6c8;
-    --ink:#0b0f0e;
-    --paper:#eef4f2;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;height:100%;background:var(--ink);color:var(--paper);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    overflow:hidden;}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Innova Archviz — AR Reticle Demo</title>
+  <style>
+    :root {
+      --accent: #5ee6c8;
+      --ink: #0b0f0e;
+      --paper: #eef4f2;
+    }
 
-  /* ---------- Landing (fuera de sesión AR) ---------- */
-  #landing{
-    position:fixed;inset:0;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;text-align:center;
-    padding:32px;gap:18px;
-  }
-  #landing h1{
-    font-size:clamp(22px,6vw,32px);
-    font-weight:700;letter-spacing:-0.02em;margin:0;
-  }
-  #landing p{
-    max-width:340px;color:#9fb0ac;font-size:15px;line-height:1.5;margin:0;
-  }
-  #enter-ar{
-    margin-top:12px;padding:16px 32px;border-radius:999px;border:none;
-    background:var(--accent);color:#062019;font-weight:700;font-size:16px;
-    cursor:pointer;letter-spacing:0.01em;
-  }
-  #unsupported{
-    display:none;color:#ff8f7a;font-size:13px;max-width:300px;line-height:1.5;
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  /* ---------- Overlay durante la sesión AR (dom-overlay) ---------- */
-  #ar-overlay{
-    position:fixed;inset:0;pointer-events:none;
-    display:none;flex-direction:column;justify-content:space-between;
-    padding:max(24px,env(safe-area-inset-top)) 20px max(28px,env(safe-area-inset-bottom));
-  }
-  #tutorial{
-    align-self:center;text-align:center;
-    background:rgba(11,15,14,0.72);backdrop-filter:blur(6px);
-    border:1px solid rgba(94,230,200,0.35);
-    border-radius:16px;padding:12px 20px;
-    font-size:14px;font-weight:600;letter-spacing:0.01em;
-    transition:opacity .25s ease;
-    max-width:280px;
-  }
-  #status-dot{
-    display:inline-block;width:8px;height:8px;border-radius:50%;
-    background:#ff8f7a;margin-right:8px;
-    transition:background .2s ease;
-  }
-  #status-dot.locked{background:var(--accent);}
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+    }
 
-  #exit-ar{
-    pointer-events:auto;align-self:center;
-    padding:12px 22px;border-radius:999px;border:1px solid rgba(238,244,242,0.3);
-    background:rgba(11,15,14,0.6);color:var(--paper);font-size:13px;font-weight:600;
-  }
-</style>
+    /* ---------- Landing (fuera de sesión AR) ---------- */
+    #landing {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 32px;
+      gap: 18px;
+    }
+
+    #landing h1 {
+      font-size: clamp(22px, 6vw, 32px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+
+    #landing p {
+      max-width: 340px;
+      color: #9fb0ac;
+      font-size: 15px;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    #enter-ar {
+      margin-top: 12px;
+      padding: 16px 32px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #062019;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+    }
+
+    #unsupported {
+      display: none;
+      color: #ff8f7a;
+      font-size: 13px;
+      max-width: 300px;
+      line-height: 1.5;
+    }
+
+    /* ---------- Overlay durante la sesión AR (dom-overlay) ---------- */
+    #ar-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: max(24px, env(safe-area-inset-top)) 20px max(28px, env(safe-area-inset-bottom));
+    }
+
+    #tutorial {
+      align-self: center;
+      text-align: center;
+      background: rgba(11, 15, 14, 0.72);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(94, 230, 200, 0.35);
+      border-radius: 16px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: opacity .25s ease;
+      max-width: 280px;
+    }
+
+    #status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ff8f7a;
+      margin-right: 8px;
+      transition: background .2s ease;
+    }
+
+    #status-dot.locked {
+      background: var(--accent);
+    }
+
+    #exit-ar {
+      pointer-events: auto;
+      align-self: center;
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(238, 244, 242, 0.3);
+      background: rgba(11, 15, 14, 0.6);
+      color: var(--paper);
+      font-size: 13px;
+      font-weight: 600;
+    }
+  </style>
 </head>
+
 <body>
 
   <div id="landing">
     <h1>Escanea el terreno<br>antes de construir</h1>
-    <p>Mueve tu teléfono lentamente para detectar una superficie plana. Cuando el retícula se ponga verde, toca para colocar el modelo.</p>
+    <p>Mueve tu teléfono lentamente para detectar una superficie plana. Cuando el retícula se ponga verde, toca para
+      colocar el modelo.</p>
     <button id="enter-ar">Iniciar AR</button>
-    <p id="unsupported">Tu navegador no soporta WebXR con AR. Prueba con Chrome en un Android compatible con ARCore — en iOS Safari no hay WebXR, ahí se usa AR Quick Look nativo en su lugar.</p>
+    <p id="unsupported">Tu navegador no soporta WebXR con AR. Prueba con Chrome en un Android compatible con ARCore — en
+      iOS Safari no hay WebXR, ahí se usa AR Quick Look nativo en su lugar.</p>
   </div>
 
   <div id="ar-overlay">
-    <div id="tutorial"><span id="status-dot"></span><span id="tutorial-text">Mueve tu cámara para escanear la superficie</span></div>
+    <div id="tutorial"><span id="status-dot"></span><span id="tutorial-text">Mueve tu cámara para escanear la
+        superficie</span></div>
     <button id="exit-ar">Salir de AR</button>
   </div>
 
+  <script type="importmap">
+    {
+      "imports":{
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+
   <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+    import * as THREE from 'three';
+    import { GLTFLoader } from
+      'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
 
     // --- Ajustes de tu modelo -------------------------------------------
     // Ruta al modelo dentro de tu propio repo (súbelo junto a este html).
@@ -95,14 +170,14 @@
     let cachedModel = null; // se carga una sola vez y se clona en cada tap
     // ----------------------------------------------------------------------
 
-    const enterBtn   = document.getElementById('enter-ar');
-    const unsupported= document.getElementById('unsupported');
-    const landing    = document.getElementById('landing');
-    const overlay    = document.getElementById('ar-overlay');
-    const exitBtn    = document.getElementById('exit-ar');
+    const enterBtn = document.getElementById('enter-ar');
+    const unsupported = document.getElementById('unsupported');
+    const landing = document.getElementById('landing');
+    const overlay = document.getElementById('ar-overlay');
+    const exitBtn = document.getElementById('exit-ar');
     const tutorialEl = document.getElementById('tutorial');
     const tutorialText = document.getElementById('tutorial-text');
-    const statusDot  = document.getElementById('status-dot');
+    const statusDot = document.getElementById('status-dot');
 
     let renderer, scene, camera, reticle, hitTestSource = null, hitTestSourceRequested = false, xrSession = null;
     let placedModel = null;
@@ -336,4 +411,5 @@
     exitBtn.addEventListener('click', () => xrSession && xrSession.end());
   </script>
 </body>
+
 </html>
